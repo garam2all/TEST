@@ -555,6 +555,12 @@ makeshop_ga_gtag('config', 'G-XEMQQDX0PL');
   .gg-sup-action:focus-visible { outline: 3px solid #1c1c1c; outline-offset: 2px; }
   .ln-talk .gg-sup-action:disabled { opacity: .55; cursor: default; }
   /* ===== スマホ読みやすさ改善 ここまで ===== */
+
+  /* ===== 点検ラウンド1：押しやすさ（見た目は変えず、タップできる範囲だけ広げます） ===== */
+  .ln-back, .ln-home { position: relative; }
+  .ln-back::after { content: ""; position: absolute; inset: -7px -6px; }
+  .ln-home::after { content: ""; position: absolute; inset: -8px -4px; }
+  .ln-home { display: inline-flex; align-items: center; min-height: 32px; }
 </style>
 
 <meta property="og:url" content="https://garam2.com/view/page/finder">
@@ -692,8 +698,8 @@ makeshop_ga_gtag('config', 'G-XEMQQDX0PL');
       <span>ベリーダンス衣装の専門店</span>
     </a>
     <nav class="gg-fp-header__actions" aria-label="ショップ">
-      <a href="https://garam2.com/view/search"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><span class="gg-fp-label">商品を探す</span></a>
-      <a class="gg-fp-header__cart" href="https://garam2.com/view/cart"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 4h2l2.4 11.2a1 1 0 0 0 1 .8h9.7a1 1 0 0 0 1-.8L21 8H6.5"/><circle cx="9.5" cy="20" r="1.3"/><circle cx="17.5" cy="20" r="1.3"/></svg><span class="gg-fp-label">カート</span></a>
+      <a href="https://garam2.com/view/search" aria-label="商品を探す"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><span class="gg-fp-label">商品を探す</span></a>
+      <a class="gg-fp-header__cart" href="https://garam2.com/view/cart" aria-label="カート"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 4h2l2.4 11.2a1 1 0 0 0 1 .8h9.7a1 1 0 0 0 1-.8L21 8H6.5"/><circle cx="9.5" cy="20" r="1.3"/><circle cx="17.5" cy="20" r="1.3"/></svg><span class="gg-fp-label">カート</span></a>
     </nav>
   </div>
   <nav class="gg-fp-header__nav" aria-label="カテゴリー">
@@ -7269,7 +7275,7 @@ window.addEventListener("pageshow", function () {
     }
     </script>
 <div class="makeshop-modal-window" data-remodal-id="makeshop-common-modal">
-    <button data-remodal-action="close" class="remodal-close"></button>
+    <button data-remodal-action="close" class="remodal-close" aria-label="閉じる"></button>
     <p class="error-text"></p>
     <button data-remodal-action="confirm" class="remodal-confirm">OK</button>
 </div>
