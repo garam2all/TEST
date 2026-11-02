@@ -5521,7 +5521,40 @@ makeshop_ga_gtag('config', 'G-XEMQQDX0PL');
       .sort(function (a, b) { return (b.rank || 0) - (a.rank || 0); });   /* 素材・スタイル・道具から先に外す */
   }
   function isProtectedCat(c) { return c && /^(TO|SK|PA|CO)$/.test(c.code || ""); }
+  /* 入力全体が商品名にそのまま入る商品（商品名のコピペなど）。
+     品目や色の自動解釈で外れてしまわないよう、通常の検索結果の先頭に必ず加えます。
+     短い語や、多数の商品名に入る一般的な語は対象外にします。 */
+  function nameHits(q) {
+    if (!INDEX) return [];
+    var rawk = key(q.raw || "");
+    if (rawk.length < 5) return [];
+    if (q.price.label || q.negativeColors.length || q.negativeCats.length || q.negativeTypes.length) return [];
+    var attrs = indexAttrs(), out = [];
+    for (var i = 0; i < INDEX.length; i++) {
+      var e = INDEX[i];
+      if (e.z || EXCLUDE.test(e.n || "")) continue;
+      if (attrs[i].name.indexOf(rawk) !== -1) out.push(e);
+    }
+    return out.length && out.length <= 12 ? out : [];
+  }
   function stagedSearch(q) {
+    var r = stagedSearchInner(q), hits = nameHits(q);
+    if (!hits.length) return r;
+    var seen = {}; hits.forEach(function (e) { seen[String(e.c)] = 1; });
+    var rest = (r.list || []).filter(function (e) { return !seen[String(e.c)]; });
+    if (r.list.length && /^(exact|weak|fuzzy)$/.test(r.mode) && hits.every(function (e) { return r.list.indexOf(e) !== -1; })) return r;
+    hits.forEach(function (e) {
+      var m = LAST_MATCH_META[String(e.c)];
+      if (!m) LAST_MATCH_META[String(e.c)] = { score:99, reasons:["商品名完全一致"] };
+    });
+    if (r.list.length && /^(exact|weak|fuzzy)$/.test(r.mode)) { r.list = hits.concat(rest); return r; }
+    /* 条件に合う商品がなかった・条件を緩めた結果のときは、商品名で探した結果として見せます */
+    var qn = copyQuery(q), label = String(q.raw || "").replace(/\s+/g, " ").trim().slice(0, 40);
+    qn.colors = []; qn.negativeColors = []; qn.cats = []; qn.negativeCats = []; qn.types = []; qn.negativeTypes = [];
+    qn.words = [{ label:label, terms:[label] }]; qn.direct = null; qn.materialOr = []; qn.catOr = []; qn.colorAnd = false;
+    return { list:hits, mode:"exact", relaxed:"", opts:{}, q:qn };
+  }
+  function stagedSearchInner(q) {
     if (!q.words.some(function (g) { return g.soft; })) return stagedSearchCore(q);
     var r = stagedSearchCore(q);
     if (r.list.length && /^(exact|weak|fuzzy)$/.test(r.mode)) return r;
