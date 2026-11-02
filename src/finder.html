@@ -1401,7 +1401,7 @@ makeshop_ga_gtag('config', 'G-XEMQQDX0PL');
     if (!toks.length) return [""];
     var out = [""];
     toks.forEach(function (t) {
-      var alts = COLOR_WORD_ROW[t] || [t], next = [];
+      var alts = Object.prototype.hasOwnProperty.call(COLOR_WORD_ROW, t) ? COLOR_WORD_ROW[t] : [t], next = [];
       out.forEach(function (o) { alts.forEach(function (a) { next.push(o ? o + " " + a : a); }); });
       out = next;
     });
@@ -6811,9 +6811,14 @@ makeshop_ga_gtag('config', 'G-XEMQQDX0PL');
     loadIndex(function () {
       setTimeout(function () {
         t.remove();
-        freeText(text);
+        /* どんな入力でも途中で例外が出て送信ボタンが効かなくなることがないよう、必ず元に戻します */
+        try { freeText(text); }
+        catch (err) {
+          try { log("concierge_error", { message: String(err && err.message).slice(0, 100) }); } catch (e2) {}
+          try { say("bot", "うまく読み取れませんでした。<br>言葉を変えてもう一度お試しいただくか、下のメニューからお選びください。"); menu(); } catch (e3) {}
+        }
         busy = false; sendBtn.disabled = false;
-        saveSession();
+        try { saveSession(); } catch (e4) {}
       }, Math.max(0, 560 - (Date.now() - began)));
     });
   }
